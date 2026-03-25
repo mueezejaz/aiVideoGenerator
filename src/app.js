@@ -2,12 +2,12 @@
 const { app } = require('electron')
 const { createMainWindow } = require('./windows/mainWindow.js')
 const { BrowserWindow } = require('electron/main')
-//const registerIpcHandlers = require('./ipc/index')
+const registerIpcHandlers = require('./ipc/index')
 
 
 async function bootstrap() {
   // Register all IPC handlers first
-  // registerIpcHandlers()
+  registerIpcHandlers()
 
   // can create splash loading window here before main windows load
   createMainWindow();

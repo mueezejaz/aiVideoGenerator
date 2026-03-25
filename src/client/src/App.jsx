@@ -7,7 +7,7 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
 
-  const data = window.api.data;
+  const data = window.api.sendQuery("hello world from frontend");
   console.log(data)
   return (
     <>
