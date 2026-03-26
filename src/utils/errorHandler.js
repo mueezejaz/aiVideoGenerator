@@ -1,6 +1,7 @@
-async function tryCatch(promise) {
+async function tryCatch(fn) {
   try {
-    const data = await promise;
+    console.log("inside try cathc")
+    const data = await fn();
     return [data, null];
   } catch (err) {
     return [null, err];

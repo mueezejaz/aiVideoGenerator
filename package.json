@@ -14,5 +14,10 @@
   "devDependencies": {
     "electron": "^41.0.3",
     "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^3.0.53",
+    "ai": "^6.0.138",
+    "zod": "^4.3.6"
   }
 }
