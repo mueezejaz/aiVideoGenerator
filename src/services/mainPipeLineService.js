@@ -3,8 +3,9 @@ class mainPipeLineService {
   constructor() {
     this.state = {};
   }
-  start(event, query) {
+  start(updateProgress, query) {
     console.log("this is query from the service", query)
+    updateProgress({ data: "started", count: count })
   }
 }
 

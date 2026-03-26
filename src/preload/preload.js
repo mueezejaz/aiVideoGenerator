@@ -4,7 +4,8 @@ const { contextBridge, ipcRenderer } = require("electron")
 
 
 contextBridge.exposeInMainWorld('api', {
-  sendQuery: (query) => { ipcRenderer.send("sendQuery", query) }
+  sendQuery: (query) => { ipcRenderer.send("sendQuery", query) },
+  getProgress: (callback) => ipcRenderer.on("sendProgress", (event, update) => callback(update))
 })
 
 
