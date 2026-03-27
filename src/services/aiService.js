@@ -6,7 +6,6 @@ const { tryCatch } = require('../utils/errorHandler.js');
 class aiService {
   constructor() {
     this.googleAi = createGoogleGenerativeAI({
-      apiKey: ,
     });
     this.defaultModel = "gemini-2.5-flash"
   }

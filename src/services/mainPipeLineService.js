@@ -1,4 +1,5 @@
 const aiService = require("./aiService.js");
+const audioService = require("./audioService.js");
 
 class mainPipeLineService {
   constructor() {
@@ -11,6 +12,7 @@ class mainPipeLineService {
     const [data, error] = await aiService.generateScriptAndOverview(query);
     console.log("this is error:", error);
     console.log("end")
+    audioService.convertScriptsToAudio(data.scenes)
     console.log("this is function", data)
   }
 }
