@@ -4,6 +4,7 @@ const fs = require("fs/promises")
 
 const _getDirPath = Object.freeze({
   audioDir: path.join(os.tmpdir(), "aivideo", "audio"),
+  codeDir: path.join(os.tmpdir(), "aivideo", "code"),
 });
 
 const getDirPath = {
