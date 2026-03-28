@@ -7,7 +7,7 @@ class aiService {
   constructor() {
     this.googleAi = createGoogleGenerativeAI({
     });
-    this.defaultModel = "gemini-2.5-flash"
+    this.defaultModel = "gemini-3.1-flash-lite-preview"
   }
 
   getModel(modelName) {

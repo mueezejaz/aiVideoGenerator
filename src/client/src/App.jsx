@@ -5,14 +5,20 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const data = window.api.sendQuery("hello world from frontend");
-  function updater(update) {
-    console.log("this is update", update)
-  }
+  const [count, setCount] = useState(0);
+  const [data, setData] = useState(null);
+
   useEffect(() => {
-    window.api.getProgress(updater)
-  }, [])
+    window.api.getProgress(updater);
+
+  }, []);
+  function sendData() {
+    window.api.sendQuery("what is limit in math");
+  }
+
+  function updater(update) {
+    console.log("this is update", update);
+  }
   console.log(data)
   return (
     <>
@@ -30,7 +36,7 @@ function App() {
         </div>
         <button
           className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => sendData()}
         >
           Count is {count}
         </button>
