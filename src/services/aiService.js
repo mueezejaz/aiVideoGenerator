@@ -1,5 +1,5 @@
 const { generateObject } = require('ai');
-const { createGoogleGenerativeAI } = require('@ai-sdk/google');
+const { createGoogleGenerativeAI, google } = require('@ai-sdk/google');
 const { z } = require('zod');
 const { tryCatch } = require('../utils/errorHandler.js');
 
@@ -18,6 +18,13 @@ class aiService {
     const { object } = await generateObject({
       model: this.getModel(modelName),
       schema: outputSchema,
+      providerOptions: {
+        google: {
+          thinkingConfig: {
+            thinkingLevel: 'high',
+          }
+        }
+      },
       prompt,
     });
     console.log("this is object", object)

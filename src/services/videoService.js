@@ -5,6 +5,7 @@ const fs = require("fs/promises");
 const { exec } = require("child_process");
 const path = require("path");
 const { z } = require("zod");
+const audioService = require("./audioService");
 
 class videoService {
   constructor() {
@@ -13,11 +14,12 @@ class videoService {
     this.maxRetries = 3;
   }
 
-  createQueue(scenes) {
+  createQueue(scenes, durations) {
     scenes.forEach((val, ind) => {
       this.queue.push({
         scene: val,
         index: ind,
+        duration: durations[ind],
         retries: 0,
         retryData: {
           preCode: null,
@@ -27,9 +29,11 @@ class videoService {
     });
   }
 
-  getPromptAndSchema(scene) {
+  getPromptAndSchema(item) {
     let outputSchema;
     let prompt;
+
+    const duration = item.duration;
 
     const COLOR_RULES = `
 COLOR RULES:
@@ -47,7 +51,19 @@ COLOR RULES:
 - ANY other color MUST be defined as a hex variable first
 `;
 
-    if (scene.retries <= 0) {
+    const DURATION_RULES = `
+DURATION RULES:
+- The TOTAL duration of this scene MUST be EXACTLY ${duration} seconds — no more, no less
+- The sum of ALL self.wait() calls + animation run_times MUST equal exactly ${duration} seconds
+- Every self.play() call has a default run_time of 1 second unless specified
+- Use self.play(..., run_time=X) to control animation duration precisely
+- At the end of construct(), add a final self.wait() to fill any remaining time
+- Example: if animations take 3.5s and total must be ${duration}s, end with self.wait(${duration} - 3.5)
+- NEVER use self.wait(0) — minimum wait is 0.1
+- Double-check your math: sum of all durations must equal ${duration}
+`;
+
+    if (item.retries <= 0) {
       outputSchema = z.object({
         code: z.string().describe(
           "Complete Python Manim code, properly formatted with newlines and 4-space indentation. Never use semicolons to chain statements."
@@ -57,9 +73,10 @@ COLOR RULES:
 You are an expert in Manim (Mathematical Animation Engine).
 Generate Python code for a Manim scene based on the following scene overview.
 
-Scene Title: ${scene.scene.title}
-Scene Overview: ${scene.scene.overview}
-Voiceover: ${scene.scene.script}
+Scene Title: ${item.scene.title}
+Scene Overview: ${item.scene.overview}
+Voiceover: ${item.scene.script}
+Target Duration: ${duration} seconds (STRICT — animation must be exactly this long)
 
 Requirements:
 1. The code must be valid Python with Manim CE (Community Edition) syntax
@@ -67,7 +84,7 @@ Requirements:
 3. Use dark background (#1a1a2e) with bright accent colors
 4. The animation should match the visual overview exactly
 5. Include proper imports at the top: from manim import *
-6. Use the class name: Scene_${scene.scene.id}
+6. Use the class name: Scene_${item.scene.id}
 
 CRITICAL FORMATTING RULES:
 - Every statement must be on its own line
@@ -84,10 +101,12 @@ TEXT AND MATH RULES:
 
 ${COLOR_RULES}
 
+${DURATION_RULES}
+
 Example structure:
 from manim import *
 
-class Scene_${scene.scene.id}(Scene):
+class Scene_${item.scene.id}(Scene):
     def construct(self):
         CYAN = "#00FFFF"
         TEAL = "#008080"
@@ -95,8 +114,9 @@ class Scene_${scene.scene.id}(Scene):
         self.camera.background_color = "#1a1a2e"
         
         title = Text("Your Title", color=WHITE)
-        self.play(Write(title))
-        self.wait(1)
+        self.play(Write(title), run_time=1.5)  # 1.5s
+        self.wait(${duration} - 1.5)           # remaining time
+        # Total: exactly ${duration}s
 `;
     } else {
       outputSchema = z.object({
@@ -109,20 +129,22 @@ You are an expert in Manim (Mathematical Animation Engine).
 The following Manim code FAILED with this specific error. Do NOT regenerate the same code.
 Carefully read the error, identify the exact line causing it, and fix it.
 
-Original Scene Title: ${scene.scene.title}
-Original Scene Overview: ${scene.scene.overview}
-Voiceover: ${scene.scene.script}
+Original Scene Title: ${item.scene.title}
+Original Scene Overview: ${item.scene.overview}
+Voiceover: ${item.scene.script}
+Target Duration: ${duration} seconds (STRICT — animation must be exactly this long)
 
 ERROR:
-${scene.retryData.error}
+${item.retryData.error}
 
 BROKEN CODE:
-${scene.retryData.preCode}
+${item.retryData.preCode}
 
 Instructions:
 1. Fix the exact error shown above — do NOT produce the same code again
 2. Keep the same animation logic and visual design
-3. Use the class name: Scene_${scene.scene.id}
+3. Use the class name: Scene_${item.scene.id}
+4. Ensure total duration is EXACTLY ${duration} seconds
 
 CRITICAL FORMATTING RULES:
 - Every statement must be on its own line
@@ -138,6 +160,8 @@ TEXT AND MATH RULES:
 - Keep MathTex expressions simple and standard (e.g., r"x^2", r"\\frac{a}{b}")
 
 ${COLOR_RULES}
+
+${DURATION_RULES}
 `;
     }
 
@@ -168,15 +192,19 @@ ${COLOR_RULES}
 
   async runManimScene(sceneId) {
     const codeDir = await getDirPath.getPathAndCreateIfNotAvailable("codeDir");
+    const videoDir = await getDirPath.getPathAndCreateIfNotAvailable("videoDir");
+
     const winFilePath = path.join(codeDir, `code_${sceneId}.py`);
 
     const wslFilePath = winFilePath
       .replace(/\\/g, "/")
       .replace(/^([A-Za-z]):/, (_, d) => `/mnt/${d.toLowerCase()}`);
 
-    const className = `Scene_${sceneId}`;
+    const wslVideoDir = videoDir
+      .replace(/\\/g, "/")
+      .replace(/^([A-Za-z]):/, (_, d) => `/mnt/${d.toLowerCase()}`);
 
-    const cmd = `wsl bash -i -c "PYTHONIOENCODING=utf-8 manim -ql '${wslFilePath}'"`;
+    const cmd = `wsl bash -i -c "PYTHONIOENCODING=utf-8 manim -ql --media_dir '${wslVideoDir}' '${wslFilePath}'"`;
 
     return new Promise((resolve) => {
       exec(cmd, { encoding: 'utf8', timeout: 120_000 }, (err, stdout, stderr) => {
@@ -184,7 +212,10 @@ ${COLOR_RULES}
           const errorOutput = stderr || stdout || err.message;
           resolve({ success: false, error: errorOutput });
         } else {
-          resolve({ success: true, output: stdout });
+          const match = (stdout + stderr).match(/File ready at\s+'?([^'\n]+\.mp4)'?/);
+          const videoPath = match ? match[1].trim() : null;
+          console.log(`[Scene ${sceneId}] Video saved at:`, videoPath);
+          resolve({ success: true, output: stdout, videoPath });
         }
       });
     });
@@ -216,7 +247,10 @@ ${COLOR_RULES}
   }
 
   async start(scenes) {
-    this.createQueue(scenes);
+    this.queue = [];
+    const durations = await audioService.getAudioDurations(scenes);
+    console.log("these are the durations", durations)
+    this.createQueue(scenes, durations);
     const results = new Array(scenes.length).fill(null);
 
     while (this.queue.length > 0) {
@@ -226,7 +260,7 @@ ${COLOR_RULES}
 
       for (const result of settled) {
         if (result.success) {
-          results[result.item.index] = result.item.scene;
+          results[result.item.scene.id] = result.item.scene;
           continue;
         }
 
@@ -250,7 +284,6 @@ ${COLOR_RULES}
               lastError: error,
               lastCode: item.retryData.preCode,
               sceneId: item.scene.id,
-              sceneIndex: item.item?.index ?? item.index,
             },
           ];
         }

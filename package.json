@@ -17,8 +17,11 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.53",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
     "ai": "^6.0.138",
     "edge-tts-universal": "^1.4.0",
+    "fluent-ffmpeg": "^2.1.3",
     "zod": "^4.3.6"
   }
 }

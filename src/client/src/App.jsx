@@ -13,7 +13,7 @@ function App() {
 
   }, []);
   function sendData() {
-    window.api.sendQuery("what is limit in math");
+    window.api.sendQuery("what is bubble sort explain with animation ");
   }
 
   function updater(update) {
