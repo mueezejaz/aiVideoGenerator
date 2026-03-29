@@ -1,0 +1,363 @@
+.setup-root {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f0f1a;
+    z-index: 9999;
+    font-family: var(--sans, system-ui, sans-serif);
+}
+
+.setup-card {
+    width: 560px;
+    max-width: calc(100vw - 48px);
+    background: #16171d;
+    border: 1px solid #2e303a;
+    border-radius: 16px;
+    padding: 40px 36px 32px;
+    box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+/* ---- Header ---- */
+.setup-header {
+    text-align: center;
+}
+
+.setup-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.setup-bolt {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    user-select: none;
+    text-transform: uppercase;
+}
+
+.setup-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #f3f4f6;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+}
+
+.setup-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* ---- Step tracker ---- */
+.setup-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+.setup-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.setup-step-indicator {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.step-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #22c55e;
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: block;
+}
+
+.step-dot--idle {
+    background: #374151;
+}
+
+.step-dot--pulse {
+    background: #7c3aed;
+    animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+.setup-step-label {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.setup-step--done .setup-step-label {
+    color: #22c55e;
+}
+
+.setup-step--active .setup-step-label {
+    color: #a78bfa;
+}
+
+.setup-step--pending .setup-step-label {
+    color: #4b5563;
+}
+
+.setup-step-line {
+    width: 36px;
+    height: 2px;
+    background: #2e303a;
+    margin: 0 6px;
+    flex-shrink: 0;
+}
+
+/* ---- Status box ---- */
+.setup-status-box {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #1f2028;
+    border: 1px solid #2e303a;
+    border-radius: 12px;
+    padding: 18px 20px;
+    min-height: 72px;
+    transition: border-color 0.3s;
+}
+
+.setup-status-box--alert {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.06);
+}
+
+.setup-status-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.setup-status-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.setup-status-badge--ok {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.setup-status-badge--warn {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+}
+
+.setup-status-badge--err {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.setup-spinner {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border: 3px solid #2e303a;
+    border-top-color: #7c3aed;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.setup-status-text {
+    flex: 1;
+}
+
+.setup-status-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e5e7eb;
+    margin-bottom: 4px;
+}
+
+.setup-status-message {
+    font-size: 13px;
+    color: #9ca3af;
+    line-height: 1.5;
+}
+
+/* ---- UAC attempt bar ---- */
+.setup-uac-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.setup-uac-pip {
+    width: 28px;
+    height: 6px;
+    border-radius: 3px;
+    background: #2e303a;
+    transition: background 0.3s;
+}
+
+.setup-uac-pip--used {
+    background: #ef4444;
+}
+
+.setup-uac-hint {
+    font-size: 12px;
+    color: #9ca3af;
+    flex: 1;
+    min-width: 200px;
+}
+
+/* ---- Fatal message ---- */
+.setup-fatal {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 13px;
+    color: #fca5a5;
+    line-height: 1.7;
+}
+
+.setup-fatal p {
+    margin: 0 0 4px;
+}
+
+/* ---- Restart banner ---- */
+.setup-restart-banner {
+    display: flex;
+    gap: 14px;
+    background: rgba(234, 179, 8, 0.08);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 10px;
+    padding: 16px 18px;
+    color: #fde68a;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.setup-restart-icon {
+    font-size: 11px;
+    font-weight: 700;
+    color: #eab308;
+    flex-shrink: 0;
+    padding-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.setup-restart-banner strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #fef3c7;
+}
+
+.setup-restart-banner p {
+    margin: 0;
+    color: #d1d5db;
+}
+
+/* ---- Log ---- */
+.setup-log-details {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.setup-log-details summary {
+    cursor: pointer;
+    user-select: none;
+    color: #4b5563;
+    padding: 4px 0;
+}
+
+.setup-log-details summary:hover {
+    color: #9ca3af;
+}
+
+.setup-log {
+    margin-top: 8px;
+    background: #0f0f1a;
+    border: 1px solid #1f2028;
+    border-radius: 8px;
+    padding: 10px 12px;
+    max-height: 120px;
+    overflow-y: auto;
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.setup-log-line {
+    color: #4b5563;
+    word-break: break-word;
+}
+
+.setup-log-line--empty {
+    color: #374151;
+    font-style: italic;
+}
+
+.setup-log-line+.setup-log-line {
+    margin-top: 2px;
+}

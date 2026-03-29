@@ -1,25 +1,22 @@
 import { useState, useEffect } from 'react'
+import SetupScreen from './Setupscreen.jsx'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
+  const [setupDone, setSetupDone] = useState(false);
   const [count, setCount] = useState(0);
-  const [data, setData] = useState(null);
 
-  useEffect(() => {
-    window.api.getProgress(updater);
-
-  }, []);
   function sendData() {
-    window.api.sendQuery("what is bubble sort explain with animation ");
+    window.api.sendQuery("what is bubble sort explain with animation");
   }
 
-  function updater(update) {
-    console.log("this is update", update);
+  if (!setupDone) {
+    return <SetupScreen onReady={() => setSetupDone(true)} />;
   }
-  console.log(data)
+
   return (
     <>
       <section id="center">
@@ -34,10 +31,7 @@ function App() {
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
           </p>
         </div>
-        <button
-          className="counter"
-          onClick={() => sendData()}
-        >
+        <button className="counter" onClick={() => sendData()}>
           Count is {count}
         </button>
       </section>
@@ -75,50 +69,10 @@ function App() {
           <ul>
             <li>
               <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
+                <svg className="button-icon" role="presentation" aria-hidden="true">
                   <use href="/icons.svg#github-icon"></use>
                 </svg>
                 GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
               </a>
             </li>
           </ul>
@@ -128,7 +82,7 @@ function App() {
       <div className="ticks"></div>
       <section id="spacer"></section>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
