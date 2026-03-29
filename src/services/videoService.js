@@ -10,7 +10,7 @@ const audioService = require("./audioService");
 class videoService {
   constructor() {
     this.queue = [];
-    this.batchSize = 1;
+    this.batchSize = 3;
     this.maxRetries = 3;
   }
 
@@ -207,7 +207,7 @@ ${DURATION_RULES}
     const cmd = `wsl bash -i -c "PYTHONIOENCODING=utf-8 manim -ql --media_dir '${wslVideoDir}' '${wslFilePath}'"`;
 
     return new Promise((resolve) => {
-      exec(cmd, { encoding: 'utf8', timeout: 120_000 }, (err, stdout, stderr) => {
+      exec(cmd, { encoding: 'utf8', timeout: 620_000 }, (err, stdout, stderr) => {
         if (err) {
           const errorOutput = stderr || stdout || err.message;
           resolve({ success: false, error: errorOutput });

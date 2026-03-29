@@ -1,5 +1,6 @@
 const aiService = require("./aiService.js");
 const audioService = require("./audioService.js");
+const mergeService = require("./mergeService.js");
 const videoService = require("./videoService.js");
 
 class mainPipeLineService {
@@ -14,7 +15,15 @@ class mainPipeLineService {
     console.log("this is error:", error);
     console.log("end")
     await audioService.convertScriptsToAudio(data.scenes)
-    videoService.start(data.scenes)
+    await videoService.start(data.scenes)
+    const [finalVideoPath, mergeError] = await mergeService.start(data.scenes);
+    if (mergeError) {
+      console.error("Merge failed:", mergeError);
+      updateProgress({ stage: "error", error: mergeError });
+      return;
+    }
+
+    console.log("Pipeline complete! Final video:", finalVideoPath);
   }
 }
 
